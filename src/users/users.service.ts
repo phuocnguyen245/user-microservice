@@ -1,8 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
 import { Model, MongooseQueryOptions } from 'mongoose';
-import { RegisterDto, UpdateProfileDto } from './users.dto';
+import { UpdateProfileDto } from './users.dto';
 import { User, UserDocument } from './users.schema';
 
 @Injectable()
@@ -12,7 +11,6 @@ export class UsersService {
   async findAll(page: number = 1, limit: number = 10, search?: string) {
     const skip = (page - 1) * limit;
 
-    // Điều kiện where
     const query: MongooseQueryOptions = {};
     if (search) {
       query.$or = [
@@ -43,23 +41,9 @@ export class UsersService {
     return user;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.userModel.findOne({ email }).exec();
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
     return user;
-  }
-
-  async create(registerDto: RegisterDto): Promise<User> {
-    const saltOrRounds = 10;
-    const password = registerDto.password;
-    const hash = await bcrypt.hash(password, saltOrRounds);
-    const newUser = new this.userModel({
-      ...registerDto,
-      password: hash,
-    });
-    return newUser.save();
   }
 
   async updateProfile(
@@ -69,5 +53,10 @@ export class UsersService {
     const user = await this.findById(id);
     user.username = updateProfileDto.username;
     return user.save();
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    const user = await this.userModel.findOne({ username }).exec();
+    return user;
   }
 }

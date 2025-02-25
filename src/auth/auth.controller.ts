@@ -1,19 +1,24 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { RegisterDto } from 'src/users/users.dto';
+import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import { RegisterDto } from '../users/users.dto';
 import { AuthService } from './auth.service';
-import { LoginDto } from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @Post('register')
-  register(@Body() dto: RegisterDto) {
-    return this.authService.register(dto);
-  }
+  constructor(private authService: AuthService) {}
 
   @Post('login')
-  login(@Body() dto: LoginDto) {
-    return this.authService.login(dto);
+  signIn(@Body() signInDto: Record<string, any>) {
+    return this.authService.signIn(signInDto.username, signInDto.password);
+  }
+  @Post('register')
+  async register(@Body() registerDto: RegisterDto) {
+    console.log({ registerDto });
+    return this.authService.register(registerDto);
+  }
+
+  @Get('profile')
+  getProfile(@Request() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    return req.user;
   }
 }

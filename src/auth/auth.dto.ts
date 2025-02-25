@@ -18,8 +18,3 @@ export class LoginDto {
   @IsNotEmpty()
   password: string;
 }
-
-export class UpdateProfileDto {
-  @IsNotEmpty()
-  username: string;
-}

@@ -1,3 +1,5 @@
+import { UserDocument } from './users.schema';
+
 export interface IUser {
   _id: string;
   username: string;
@@ -7,5 +9,5 @@ export interface IUser {
 }
 
 export interface RequestWithUser extends Request {
-  user: IUser;
+  user: UserDocument;
 }
